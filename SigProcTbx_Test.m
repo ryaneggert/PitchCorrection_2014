@@ -11,11 +11,3 @@ plot(freq,abs(xdft));
 fprintf('Maximum occurs at %d Hz.\n',freq(I));
 
 
-
-
-
-psdest = psd(spectrum.periodogram,x,'Fs',Fs,'NFFT',length(x));
-[~,I] = max(psdest.Data);
-fprintf('Maximum occurs at %d Hz.\n',psdest.Frequencies(I));
-
-plot(psdest)

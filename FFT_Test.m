@@ -1,7 +1,7 @@
-micSampFreq = 8000; %FFT MaxFreq = micSampFreq/2
+micSampFreq = 75100; %FFT MaxFreq = micSampFreq/2
 recObj = audiorecorder(micSampFreq, 16, 1);
 
-samplesPerChunk = 1024;
+samplesPerChunk = 2048;
 chunkLength = samplesPerChunk/micSampFreq;
 time_1 = linspace(0,chunkLength,samplesPerChunk);
 
@@ -27,12 +27,19 @@ for i = 1:3
     fprintf('Maximum occurs at %d Hz.\n',f(I));
     
     
+    
+    
     figure(2)
     % Plot single-sided amplitude spectrum.
     plot(f,2*abs(Y(1:NFFT/2+1)))
     title('Single-Sided Amplitude Spectrum of y(t)')
     xlabel('Frequency (Hz)')
     ylabel('|Y(f)|')
-    axis([10^1 micSampFreq/2 0 .15])
+    axis([10^1 5000 0 .15])
+    
+    figure(3)
+    clf
+    hold all
+    plot(abs(fft(y)))
 end
 
