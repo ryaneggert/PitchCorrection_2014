@@ -1,0 +1,19 @@
+Constraints:
+
+
+Frequency Resolution:
+
+    The frequency resolution of a FFT, df, can be described as 
+
+    df = 1/T = fs/N
+
+    where T is acquisition time, N is the number of samples, and fs is the sampling frequency.
+
+    For example, for a frequency resolution of .01 Hz, T = 100 seconds.
+
+
+Maximum Resolvable Frequency:
+
+    The maximum frequency resolvable by an FFT, fmax, can be described as
+
+    fmax = fnyquist = fs/2

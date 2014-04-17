@@ -1,17 +1,20 @@
-micSampFreq = 75100; %FFT MaxFreq = micSampFreq/2
+micSampFreq = 88000; %FFT MaxFreq = micSampFreq/2
 recObj = audiorecorder(micSampFreq, 16, 1);
 
-samplesPerChunk = 2048;
+samplesPerChunk = 2^20;
+
+freqresolution = micSampFreq / samplesPerChunk
 chunkLength = samplesPerChunk/micSampFreq;
 time_1 = linspace(0,chunkLength,samplesPerChunk);
 
 
-for i = 1:3
+for i = 1:1
+   tic
     recordblocking(recObj, chunkLength); 
     
 
     y = getaudiodata(recObj);
-
+toc
    figure(1)
    
     plot(time_1',y)
@@ -36,10 +39,6 @@ for i = 1:3
     xlabel('Frequency (Hz)')
     ylabel('|Y(f)|')
     axis([10^1 5000 0 .15])
-    
-    figure(3)
-    clf
-    hold all
-    plot(abs(fft(y)))
+
 end
 
