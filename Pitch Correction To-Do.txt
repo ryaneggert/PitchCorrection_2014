@@ -1,0 +1,36 @@
+Pitch Correction To-Do
+April 18, 2014
+
+MATLAB:
+	Identify and fix issue related to taking IFFT 
+	 -(shifted FFT appears correct, but IFFT includes 2 freqs. and has complex components)
+		- Investigate fftshift & ifftshift
+		- Make sure IFFT lines up in time domain as it should
+		- IFFT works when FFT is not circularly shifted. (inAudio = outAudio)
+			- Circular shift appears to change FFT the way we'd like. 
+			- IFFT of circularly shifted FFT does NOT look the way we'd like 
+				- outAudio has TWO frequencies, when the FFT (taken before IFFT) suggests it should only have one
+					- EXCEPT for large shifts (shift>100), when a second peak on the shifted FFT becomes visible.
+		- As of now, I think that the IFFT is being taken improperly, the circular shift is not the way to move 
+			frequency (but it sure seems to be), or a combination of the two. 
+
+	Shorten Window Length (time)
+		- Yet also increase resolution. #TRADEOFFS
+			-Cheat. Interpolate. Zero-Padding.  <- Siddhartan so far disapproves.
+			- But MATLAB has a padding function. May be worth a quick test. 
+
+	Play with different windows
+		- MATLAB has a bunch of different windows. Whee!
+
+
+	Lookup Table / Freqs. to shift to
+		- Compare winMaxFreq(i) to a database (array, struct, whatever would work) of piano key frequencies.
+		- Determine appropriate note to shift our FFT to.
+		- Use frequency array to determine how many places to shift (assuming circular shift is the right way)
+		- Shift
+
+	Pre-Allocate Data Structures at beginning of code for tidiness & efficiency.
+
+	The first window has nothing to sum with it's first half. Investigate using a partial window at the beginning.
+
+
