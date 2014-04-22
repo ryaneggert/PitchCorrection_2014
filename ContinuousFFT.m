@@ -121,10 +121,10 @@ hold all
 
 plot(1:winLen, WindowedSegments{5}, 'b')
 % plot(timeScale, outAudio, 'r')
-plot(1:winLen, IFFT{5}, 'g')
+plot(1:winLen, IFFT_base{5}, 'g')
 
-title('inAudio & outAudio')
-xlabel('time (s.)')
+title('inAudio & outAudio (window 5)')
+xlabel('samples')
 ylabel('Value')
 
 figure(6)
