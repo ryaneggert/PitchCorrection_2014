@@ -34,6 +34,7 @@ end
 
 NFFT = 2^nextpow2(winLen);
 f = (-NFFT/2: (NFFT-1)/2)*fs/NFFT;
+freqRes = abs(f(5)-f(4));
 for i = 1:winTotalNum
     FFT{i} = fftshift(fft(WindowedSegments{i}, NFFT)/winLen);
     [~,I] = max(abs(FFT{i}));
@@ -44,15 +45,18 @@ end
 
 %% Shifting %%
 
-shiftAmount = 50; % Number of places to circularly shift inAudio FFT.
+
 
 for i=1:winTotalNum
+    [targetFreq, shiftAmount] = pitchshift(-winMaxFreq(i), freqRes); 
+    
     oneHalfFFTtoShift{i} = FFT{i}(1:NFFT/2+1); % Take -fs/2 Hz to 0 Hz 
     shiftHalf{i} = circshift(oneHalfFFTtoShift{i}, shiftAmount); % Shift just the neg freqs. (& 0)
     backTogether(1:NFFT/2+1) = shiftHalf{i}; %-fs/2 to 0 of backTogether
     backTogether(NFFT/2+2:NFFT) = -flipud(shiftHalf{i}(2:NFFT/2));% freq_after_zero to fs/2
     toIFFT{i} = backTogether;
     IFFT_base{i} = ifftshift(ifft(ifftshift(toIFFT{i}), winLen, 'symmetric')*NFFT);
+%     IFFT_base{i} = abs(ifft(toIFFT{i}, winLen, 'symmetric')*NFFT);
     IFFT_magn{i} = abs(IFFT_base{i});
     IFFT_phase{i} = angle(IFFT_base{i});
 %     absPhase = zeros(size(1:winLen));
