@@ -121,7 +121,7 @@ figure (3)
 clf
 hold all
 
-plot(1:winTotalNum, winMaxFreq,'-g.')
+plot(1:winTotalNum, -winMaxFreq,'-g.')
 title('Maximum Frequency of Each Window')
 xlabel('Window Number')
 ylabel('Frequency [Hz.]')
@@ -133,7 +133,7 @@ hold all
 
 plot(1:winLen, WindowedSegments{5}, 'b')
 % plot(timeScale, outAudio, 'r')
-plot(1:winLen, toIFFT{5}, 'g')
+plot(1:winLen, abs(toIFFT{5}), 'g')
 
 title('inAudio & outAudio')
 xlabel('time (s.)')
@@ -166,15 +166,16 @@ figure (4)
 clf
 
 
-semilogy(f, abs(FFT{7}), 'b')
+semilogy(f, abs(toIFFT{7}), 'b')
 hold all
 semilogy(f, abs(outFFT{7}), 'r')
 axis([-5000 5000 10^-6.5 .035]);
 title('FFT of outAudio')
 xlabel('Frequency [Hz.]')
 ylabel('|FFT|')
-legend('FFT of inAudio','Actual FFT of outAudio')
+legend('"Predicted" FFT of outAudio','Actual FFT of outAudio')
 
 figure(3)
 hold all
-plot(1:winTotalNum, outwinMaxFreq,'-b.')
+plot(1:winTotalNum, -outwinMaxFreq,'-b.')
+legend('Input Signal', 'Output Signal', 'Location', 'SouthEast')
