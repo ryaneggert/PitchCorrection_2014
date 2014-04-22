@@ -10,8 +10,9 @@ timeScale = linspace(0,numSamp/fs, numSamp);
 %% Window Configuration %%
 
 winLen = 2^13; % make sure this is even
-winOverlap = 2^12; % make sure this is even
-win =hamming(winLen, 'periodic'); % set window type. MATLAB has many.
+winOverlap = 0; % make sure this is even
+win =hamming(winLen, 'periodic'); % Hamming Window
+win = ones([winLen 1]); % Homemade Rectangular Window
 
 winTotalNum = floor((winOverlap - (numSamp + 1))/(winOverlap - winLen));  
              % maximum number of windows w/o overrunning the end of inAudio.
@@ -45,18 +46,18 @@ end
 
 %% Shifting %%
 
-
-
 for i=1:winTotalNum
-    [targetFreq, shiftAmount] = pitchshift(-winMaxFreq(i), freqRes); 
+    [targetFreq(i), shiftAmount] = pitchshift(-winMaxFreq(i), freqRes, 0); % Use 1 when using synth-strings
     
     oneHalfFFTtoShift{i} = FFT{i}(1:NFFT/2+1); % Take -fs/2 Hz to 0 Hz 
     shiftHalf{i} = circshift(oneHalfFFTtoShift{i}, shiftAmount); % Shift just the neg freqs. (& 0)
     backTogether(1:NFFT/2+1) = shiftHalf{i}; %-fs/2 to 0 of backTogether
     backTogether(NFFT/2+2:NFFT) = -flipud(shiftHalf{i}(2:NFFT/2));% freq_after_zero to fs/2
-    toIFFT{i} = backTogether;
+       toIFFT{i} = backTogether;
+
     IFFT_base{i} = ifftshift(ifft(ifftshift(toIFFT{i}), winLen, 'symmetric')*NFFT);
 %     IFFT_base{i} = abs(ifft(toIFFT{i}, winLen, 'symmetric')*NFFT);
+    
     IFFT_magn{i} = abs(IFFT_base{i});
     IFFT_phase{i} = angle(IFFT_base{i});
 %     absPhase = zeros(size(1:winLen));
@@ -66,7 +67,7 @@ for i=1:winTotalNum
 %             IFFT_magn{i}(k) = -IFFT_magn{i}(k);
 %         end
 %     end
-    IFFT{i} = IFFT_magn{i};
+    IFFT{i} = IFFT_magn{i};  % Currently unused
 end
 
 %% Reconstructing Audio %%
@@ -77,23 +78,6 @@ for i=1:winTotalNum
    outAudio = outAudio + stagingMatrix;
 end
 
-
-
-%% Low-Pass Filter %%
-
-% All frequency values are in Hz.
-% Sampling Frequency
-
-Fpass = 18000;       % Passband Frequency
-Fstop = 22000;       % Stopband Frequency
-Apass = 1;           % Passband Ripple (dB)
-Astop = 80;          % Stopband Attenuation (dB)
-match = 'stopband';  % Band to match exactly
-
-% Construct an FDESIGN object and call its BUTTER method.
-h  = fdesign.lowpass(Fpass, Fstop, Apass, Astop, fs);
-Hd = design(h, 'butter', 'MatchExactly', match);
-outAudio_filt = filter(Hd, outAudio);
 %% Plot Results %%
 
 figure (1)
@@ -137,11 +121,19 @@ hold all
 
 plot(1:winLen, WindowedSegments{5}, 'b')
 % plot(timeScale, outAudio, 'r')
-plot(1:winLen, abs(toIFFT{5}), 'g')
+plot(1:winLen, IFFT{5}, 'g')
 
 title('inAudio & outAudio')
 xlabel('time (s.)')
 ylabel('Value')
+
+figure(6)
+clf
+hold all
+plot(1:winTotalNum, targetFreq,'-g.')
+title('Snap Frequency of Each Window')
+xlabel('Window Number')
+ylabel('Frequency [Hz.]')
 
 
 %% Playback %%
