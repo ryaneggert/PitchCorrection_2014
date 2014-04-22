@@ -1,7 +1,7 @@
-micSampFreq = 88000; %FFT MaxFreq = micSampFreq/2
+micSampFreq = 880*2; %FFT MaxFreq = micSampFreq/2
 recObj = audiorecorder(micSampFreq, 16, 1);
 
-samplesPerChunk = 2^20;
+samplesPerChunk = 2^15;
 
 freqresolution = micSampFreq / samplesPerChunk
 chunkLength = samplesPerChunk/micSampFreq;
@@ -23,7 +23,7 @@ toc
     
     NFFT = 2^nextpow2(samplesPerChunk); % Next power of 2 from length of y
     Y = fft(y,NFFT)/samplesPerChunk;
-    f = micSampFreq/2*linspace(0,1,NFFT/2+1);
+    f = [-NFFT/2: (NFFT-1)/2]*micSampFreq/NFFT;
     
     [~,I] = max(abs(Y));
     I
@@ -34,11 +34,11 @@ toc
     
     figure(2)
     % Plot single-sided amplitude spectrum.
-    plot(f,2*abs(Y(1:NFFT/2+1)))
+    plot(f,abs(fftshift(Y)))
     title('Single-Sided Amplitude Spectrum of y(t)')
     xlabel('Frequency (Hz)')
     ylabel('|Y(f)|')
-    axis([10^1 5000 0 .15])
+    axis([-5000 5000 0 .15])
 
 end
 
