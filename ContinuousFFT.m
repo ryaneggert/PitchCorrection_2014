@@ -10,7 +10,7 @@ timeScale = linspace(0,numSamp/fs, numSamp);
 %% Window Configuration %%
 
 winLen = 2^13; % make sure this is even
-winOverlap = .5*winLen; % make sure this is even
+winOverlap =  2*round((winLen * .5)/2); % make sure this is even
 win =hamming(winLen, 'periodic'); % Hamming Window
 % win = ones([winLen 1]); % Homemade Rectangular Window
 
@@ -56,18 +56,7 @@ for i=1:winTotalNum
     toIFFT{i} = backTogether;
 
     IFFT_base{i} = ifft(ifftshift(toIFFT{i}), winLen, 'symmetric')*NFFT;
-%     IFFT_base{i} = abs(ifft(toIFFT{i}, winLen, 'symmetric')*NFFT);
-    
-    IFFT_magn{i} = abs(IFFT_base{i});
-    IFFT_phase{i} = angle(IFFT_base{i});
-%     absPhase = zeros(size(1:winLen));
-%     for k = 1:winLen
-%         absPhase(k) = abs(IFFT_phase{i}(k));
-%         if pi/2 <= absPhase(k)  && absPhase(k) <= pi
-%             IFFT_magn{i}(k) = -IFFT_magn{i}(k);
-%         end
-%     end
-    IFFT{i} = IFFT_magn{i};  % Currently unused
+
 end
 
 %% Reconstructing Audio %%
