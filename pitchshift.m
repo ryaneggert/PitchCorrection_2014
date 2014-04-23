@@ -14,8 +14,15 @@ V  = [ 440.000000000000000   466.163761518089916 493.883301256124111   523.25113
 for i = 1:length(V)%:length(v) % looping through keys where the subsequent keys have...
             % same gap in frequency \
    if V(i) <= maxFreq && maxFreq <= V(i+1)
-       z = i;
-      
+       Vi_m_mF = abs(V(i) - maxFreq);
+       Vip1_m_mF = abs(V(i+1) - maxFreq);
+       if Vi_m_mF < Vip1_m_mF
+           z = i;
+           break
+       else 
+           z = i+1;
+           break
+       end
    end 
    
 end
