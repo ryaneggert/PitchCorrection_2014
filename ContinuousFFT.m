@@ -2,7 +2,7 @@
 
 %% Read Audio %%
 clear all
-[inAudio,fs] = audioread('CScale.wav');
+[inAudio,fs] = audioread('TenzinSings.wav');
 inAudio = inAudio(:,1); % stereo to mono
 numSamp = length(inAudio); % number of samples in inAudio
 timeScale = linspace(0,numSamp/fs, numSamp);
@@ -47,7 +47,7 @@ end
 %% Shifting %%
 
 for i=1:winTotalNum
-    [targetFreq(i), shiftAmount] = pitchshift(-winMaxFreq(i), freqRes, 0); % Use 1 when using synth-strings
+    [targetFreq(i), shiftAmount] = pitchshift(-winMaxFreq(i), freqRes); % Use 1 when using synth-strings
     
     oneHalfFFTtoShift{i} = FFT{i}(1:NFFT/2+1); % Take -fs/2 Hz to 0 Hz 
     shiftHalf{i} = circshift(oneHalfFFTtoShift{i}, shiftAmount); % Shift just the neg freqs. (& 0)

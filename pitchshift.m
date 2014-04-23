@@ -4,7 +4,7 @@ function [snapFreq, placesToShift] = pitchshift(maxFreq, freqRes, double)
 % double indicates whether to halve the target frequency 1 = halve, 0 =
 % normal
 x= 0;
-V  = [ 440.000000000000000   466.163761518089916 493.883301256124111   523.251130601197269 ...
+V  = [ 200 440.000000000000000   466.163761518089916 493.883301256124111   523.251130601197269 ...
       554.365261953744192   587.329535834815120    622.253967444161821   659.255113825739859 ...
       698.456462866007768   739.988845423268797 783.990871963498588   830.609395159890277 ...
       880.000000000000000   932.327523036179832 987.766602512248223  1046.502261202394538 ...
@@ -26,13 +26,8 @@ for i = 1:length(V)%:length(v) % looping through keys where the subsequent keys 
    end 
    
 end
- %  round(0.7447 * x)
- if double ==1
-     snapFreq = V(z)/2;
- else
-     snapFreq= V(z);
- end
- 
+ snapFreq= V(z);
+
  freqDiff = maxFreq - snapFreq;
  placesToShift = round(freqDiff/freqRes);
  
