@@ -25,7 +25,7 @@ toc
     Y = fft(y,NFFT)/samplesPerChunk;
     f = [-NFFT/2: (NFFT-1)/2]*micSampFreq/NFFT;
     
-    [~,I] = max(abs(Y));
+    [~,I] = max(abs(fftshift(Y)));
     I
     fprintf('Maximum occurs at %d Hz.\n',f(I));
     
