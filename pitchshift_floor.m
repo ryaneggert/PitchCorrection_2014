@@ -1,9 +1,9 @@
-function [snapFreq, placesToShift] = pitchshift(maxFreq, freqRes, double)
+function [snapFreq, placesToShift] = pitchshift_floor(maxFreq, freqRes)
 
 % KEYS THAT ARE CONSIDERED FOR NOW
 % double indicates whether to halve the target frequency 1 = halve, 0 =
 % normal
-x= 0;
+
 V  = [ 440.000000000000000   466.163761518089916 493.883301256124111   523.251130601197269 ...
       554.365261953744192   587.329535834815120    622.253967444161821   659.255113825739859 ...
       698.456462866007768   739.988845423268797 783.990871963498588   830.609395159890277 ...
@@ -16,17 +16,11 @@ for i = 1:length(V)%:length(v) % looping through keys where the subsequent keys 
             % same gap in frequency \
    if V(i) <= maxFreq && maxFreq <= V(i+1)
        z = i;
-      
    end 
    
 end
- %  round(0.7447 * x)
- if double ==1
-     snapFreq = V(z)/2;
- else
-     snapFreq= V(z);
- end
  
+ snapFreq= V(z);
  freqDiff = maxFreq - snapFreq;
  placesToShift = round(freqDiff/freqRes);
  

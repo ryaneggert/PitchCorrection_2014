@@ -10,9 +10,9 @@ timeScale = linspace(0,numSamp/fs, numSamp);
 %% Window Configuration %%
 
 winLen = 2^13; % make sure this is even
-winOverlap = 0; % make sure this is even
+winOverlap = .5*winLen; % make sure this is even
 win =hamming(winLen, 'periodic'); % Hamming Window
-win = ones([winLen 1]); % Homemade Rectangular Window
+% win = ones([winLen 1]); % Homemade Rectangular Window
 
 winTotalNum = floor((winOverlap - (numSamp + 1))/(winOverlap - winLen));  
              % maximum number of windows w/o overrunning the end of inAudio.
@@ -53,9 +53,9 @@ for i=1:winTotalNum
     shiftHalf{i} = circshift(oneHalfFFTtoShift{i}, shiftAmount); % Shift just the neg freqs. (& 0)
     backTogether(1:NFFT/2+1) = shiftHalf{i}; %-fs/2 to 0 of backTogether
     backTogether(NFFT/2+2:NFFT) = -flipud(shiftHalf{i}(2:NFFT/2));% freq_after_zero to fs/2
-       toIFFT{i} = backTogether;
+    toIFFT{i} = backTogether;
 
-    IFFT_base{i} = ifftshift(ifft(ifftshift(toIFFT{i}), winLen, 'symmetric')*NFFT);
+    IFFT_base{i} = ifft(ifftshift(toIFFT{i}), winLen, 'symmetric')*NFFT;
 %     IFFT_base{i} = abs(ifft(toIFFT{i}, winLen, 'symmetric')*NFFT);
     
     IFFT_magn{i} = abs(IFFT_base{i});
