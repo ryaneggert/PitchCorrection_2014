@@ -2,7 +2,7 @@
 
 %% Read Audio %%
 clear all
-[inAudio,fs] = audioread('TenzinSings.wav');
+[inAudio,fs] = audioread('CScale.wav');
 inAudio = inAudio(:,1); % stereo to mono
 numSamp = length(inAudio); % number of samples in inAudio
 timeScale = linspace(0,numSamp/fs, numSamp);
@@ -85,9 +85,9 @@ figure (2)
 clf
 
 
-semilogy(f, abs(FFT{3}), 'b')
+semilogy(f, abs(FFT{3}), 'b', 'LineWidth', 1.5)
 hold all
-semilogy(f, abs(toIFFT{3}), 'r')
+semilogy(f, abs(toIFFT{3}), 'r', 'LineWidth', 1.5)
 axis([-5000 5000 10^-6.3 .035]);
 title('FFT of inAudio and shifted FFT, "toIFFT"')
 xlabel('Frequency [Hz.]')
@@ -98,7 +98,7 @@ figure (3)
 clf
 hold all
 
-plot(1:winTotalNum, -winMaxFreq,'-g.')
+plot(1:winTotalNum, -winMaxFreq,'-g*', 'MarkerSize', 6, 'LineWidth', 2)
 title('Maximum Frequency of Each Window')
 xlabel('Window Number')
 ylabel('Frequency [Hz.]')
@@ -119,7 +119,7 @@ ylabel('Value')
 figure(6)
 clf
 hold all
-plot(1:winTotalNum, targetFreq,'-g.')
+plot(1:winTotalNum, targetFreq,'-m*', 'MarkerSize', 6, 'LineWidth', 2)
 title('Snap Frequency of Each Window')
 xlabel('Window Number')
 ylabel('Frequency [Hz.]')
@@ -162,5 +162,5 @@ legend('"Predicted" FFT of outAudio','Actual FFT of outAudio')
 
 figure(3)
 hold all
-plot(1:winTotalNum, -outwinMaxFreq,'-b.')
+plot(1:winTotalNum, -outwinMaxFreq,'-b*', 'MarkerSize', 6, 'LineWidth', 2)
 legend('Input Signal', 'Output Signal', 'Location', 'SouthEast')
