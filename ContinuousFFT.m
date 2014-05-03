@@ -178,7 +178,6 @@ end
 figure (4)
 clf
 
-
 semilogy(f, abs(toIFFT{7}), 'b')
 hold all
 semilogy(f, abs(outFFT{7}), 'r')
@@ -197,27 +196,31 @@ legend('Input Signal', 'Output Signal', 'Location', 'SouthEast')
 
 % inAudio FFT %
 figure(8)
-title('FFT of inAudio')
-xlabel('Frequency [Hz.]')
-ylabel('|FFT|')
+
 for i = 1:winTotalNum
     clf
     semilogy(f, abs(FFT{i}), 'b', 'LineWidth', 1.5)
     axis([-2000 2000 10^-8 .04]);
+    title('FFT of inAudio')
+    xlabel('Frequency [Hz.]')
+    ylabel('|FFT|')
     inAudioFFTMovie(i) = getframe;
 end
 
 % outAudio FFT %
 figure(9)
-title('FFT of outAudio')
-xlabel('Frequency [Hz.]')
-ylabel('|FFT|')
+
 for i = 1:winTotalNum
     clf
     semilogy(f, abs(outFFT{i}), 'r', 'LineWidth', 1.5)
     axis([-2000 2000 10^-8 .04]);
+    title('FFT of outAudio')
+    xlabel('Frequency [Hz.]')
+    ylabel('|FFT|')
     outAudioFFTMovie(i) = getframe;
 end
 
 movie(inAudioFFTMovie, 1, fs/winLen)
 movie(outAudioFFTMovie, 1, fs/winLen)
+movie2avi(inAudioFFTMovie, 'inAudioFFTMovie.avi', 'compression', 'None');
+movie2avi(outAudioFFTMovie, 'outAudioFFTMovie.avi', 'compression', 'None');
