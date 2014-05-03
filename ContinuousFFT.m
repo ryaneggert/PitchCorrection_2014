@@ -10,7 +10,7 @@ timeScale = linspace(0,numSamp/fs, numSamp);
 %% Window Configuration %%
 
 winLen = 2^13; % make sure this is even
-winOverlap =  2*round(winLen*.45/2); % make sure this is even
+winOverlap =  2*round(winLen*.49992/2); % make sure this is even
 win =hamming(winLen, 'periodic'); % Hamming Window
 % win = ones([winLen 1]); % Homemade Rectangular Window
 
@@ -127,7 +127,7 @@ ylabel('Frequency [Hz.]')
 audiowrite('PitchShift_Output.wav', outAudio, fs) % Ouput a WAV audio file for listening
 
 
-%% Hamming Window Visualization %%
+%% Window Visualization %%
 
 winVisVect = ones(size(inAudio)); % Create a vector of ones as large as the input signal
 winVisSegments{1} = winVisVect(StartIndex(1):EndIndex(1)); % Split this into segments (first value)
