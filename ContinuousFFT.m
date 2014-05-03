@@ -130,10 +130,8 @@ audiowrite('PitchShift_Output.wav', outAudio, fs)
 
 %% Hamming Window Visualization %%
 
-%Not working as expected--must check variable names, etc.
-
 winVisVect = ones(size(inAudio));
-winVisSegments{1} = inAudio(StartIndex(1):EndIndex(1));
+winVisSegments{1} = winVisVect(StartIndex(1):EndIndex(1));
 winVisWindowedSegments{1} = winVisSegments{1}.*win;
 
 for i = 2:winTotalNum
@@ -154,7 +152,7 @@ clf
 hold all
 
 plot(timeScale, outWinVis, 'b')
-axis([4*(fs/winLen) 9*(fs/winLen)  -2 2])
+axis([4*(winLen/fs) 9*(winLen/fs)  -2 2])
 title('Windowing Visualization')
 xlabel('time (s.)')
 ylabel('Value')
