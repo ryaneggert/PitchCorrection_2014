@@ -14,8 +14,8 @@ winOverlap =  2*round(winLen*.45/2); % make sure this is even
 win =hamming(winLen, 'periodic'); % Hamming Window
 % win = ones([winLen 1]); % Homemade Rectangular Window
 
-winTotalNum = floor((winOverlap - (numSamp + 1))/(winOverlap - winLen));  
-             % maximum number of windows w/o overrunning the end of inAudio.
+winTotalNum = floor((winOverlap - (numSamp + 1))/(winOverlap - winLen));
+% maximum number of windows w/o overrunning the end of inAudio.
 
 %% Segments %%
 
@@ -25,22 +25,22 @@ Segments{1} = inAudio(StartIndex(1):EndIndex(1));
 WindowedSegments{1} = Segments{1}.*win;
 
 for i = 2:winTotalNum
-    StartIndex(i) = (i-1)*(winLen-winOverlap);
-    EndIndex(i) = (i*winLen-((i-1)*winOverlap))-1;
-    Segments{i} = inAudio(StartIndex(i):EndIndex(i));
-    WindowedSegments{i} = Segments{i}.*win; 
+    StartIndex(i) = (i-1)*(winLen-winOverlap); % Creates a list of window starting indices
+    EndIndex(i) = (i*winLen-((i-1)*winOverlap))-1; % Creates a list of window ending indices
+    Segments{i} = inAudio(StartIndex(i):EndIndex(i)); % Splits inAudio into segments
+    WindowedSegments{i} = Segments{i}.*win; % Creates windowed segments
 end
 
 %% FFT %%
 
-NFFT = 2^nextpow2(winLen);
-f = (-NFFT/2: (NFFT-1)/2)*fs/NFFT;
-freqRes = abs(f(5)-f(4));
+NFFT = 2^nextpow2(winLen); % FFTs are most efficient for 2^n sized data. Find the next greatest power of two.
+f = (-NFFT/2: (NFFT-1)/2)*fs/NFFT; % Generates a vector of frequencies for use with fftshift-ed data.
+freqRes = abs(f(5)-f(4)); % Calculates the frequency resolution of this run.
 for i = 1:winTotalNum
-    FFT{i} = fftshift(fft(WindowedSegments{i}, NFFT)/winLen);
-    [~,I] = max(abs(FFT{i}));
-    winMaxFreq(i) = f(I);
-%    fprintf('Maximum occurs at %d Hz.\n',f(I)); 
+    FFT{i} = fftshift(fft(WindowedSegments{i}, NFFT)/winLen); % Take FFT of each window. Note 1/winLen term
+    [~,I] = max(abs(FFT{i})); % Identify index of maximum value of each window's FFT (magnitude of)
+    winMaxFreq(i) = f(I); % Save maximum value to a vector
+    %    fprintf('Maximum occurs at %d Hz.\n',f(I));
     % Use above line to display winMaxFreq each loop
 end
 
@@ -49,22 +49,22 @@ end
 for i=1:winTotalNum
     [targetFreq(i), shiftAmount] = pitchshift(-winMaxFreq(i), freqRes); % Use 1 when using synth-strings
     
-    oneHalfFFTtoShift{i} = FFT{i}(1:NFFT/2+1); % Take -fs/2 Hz to 0 Hz 
+    oneHalfFFTtoShift{i} = FFT{i}(1:NFFT/2+1); % Take -fs/2 Hz to 0 Hz
     shiftHalf{i} = circshift(oneHalfFFTtoShift{i}, shiftAmount); % Shift just the neg freqs. (& 0)
     backTogether(1:NFFT/2+1) = shiftHalf{i}; %-fs/2 to 0 of backTogether
     backTogether(NFFT/2+2:NFFT) = -flipud(shiftHalf{i}(2:NFFT/2));% freq_after_zero to fs/2
     toIFFT{i} = backTogether;
-
-    IFFT_base{i} = ifft(ifftshift(toIFFT{i}), winLen, 'symmetric')*NFFT;
-
+    
+    IFFT_base{i} = ifft(ifftshift(toIFFT{i}), winLen, 'symmetric')*NFFT; % Take IFFT of shifted freq-domain signal
+    
 end
 
 %% Reconstructing Audio %%
 outAudio = zeros(size(inAudio));
 for i=1:winTotalNum
-   stagingMatrix = zeros(size(inAudio));
-   stagingMatrix(StartIndex(i):EndIndex(i)) = IFFT_base{i};
-   outAudio = outAudio + stagingMatrix;
+    stagingMatrix = zeros(size(inAudio));
+    stagingMatrix(StartIndex(i):EndIndex(i)) = IFFT_base{i};
+    outAudio = outAudio + stagingMatrix;
 end
 
 %% Plot Results %%
@@ -136,14 +136,14 @@ winVisWindowedSegments{1} = winVisSegments{1}.*win;
 
 for i = 2:winTotalNum
     winVisSegments{i} = winVisVect(StartIndex(i):EndIndex(i));
-    winVisWindowedSegments{i} = winVisSegments{i}.*win; 
+    winVisWindowedSegments{i} = winVisSegments{i}.*win;
 end
 
 outWinVis = zeros(size(inAudio));
 for i=1:winTotalNum
-   winVisStagingMatrix = zeros(size(inAudio));
-   winVisStagingMatrix(StartIndex(i):EndIndex(i)) = winVisWindowedSegments{1};
-   outWinVis = outWinVis + winVisStagingMatrix;
+    winVisStagingMatrix = zeros(size(inAudio));
+    winVisStagingMatrix(StartIndex(i):EndIndex(i)) = winVisWindowedSegments{1};
+    outWinVis = outWinVis + winVisStagingMatrix;
 end
 
 
@@ -167,7 +167,7 @@ outWindowedSegments{1} = outSegments{1}.*win;
 
 for i = 2:winTotalNum
     outSegments{i} = outAudio(StartIndex(i):EndIndex(i));
-    outWindowedSegments{i} = outSegments{i}.*win; 
+    outWindowedSegments{i} = outSegments{i}.*win;
 end
 for i = 1:winTotalNum
     outFFT{i} = fftshift(fft(outWindowedSegments{i}, NFFT)/winLen);
