@@ -10,7 +10,7 @@ timeScale = linspace(0,numSamp/fs, numSamp);
 %% Window Configuration %%
 
 winLen = 2^13; % make sure this is even
-winOverlap =  2*round((winLen * .5)/2); % make sure this is even
+winOverlap =  2*round(winLen*.45/2); % make sure this is even
 win =hamming(winLen, 'periodic'); % Hamming Window
 % win = ones([winLen 1]); % Homemade Rectangular Window
 
@@ -83,8 +83,6 @@ legend('inAudio', 'outAudio')
 
 figure (2)
 clf
-
-
 semilogy(f, abs(FFT{3}), 'b', 'LineWidth', 1.5)
 hold all
 semilogy(f, abs(toIFFT{3}), 'r', 'LineWidth', 1.5)
@@ -109,7 +107,7 @@ clf
 hold all
 
 plot(1:winLen, WindowedSegments{5}, 'b')
-% plot(timeScale, outAudio, 'r')
+plot(timeScale, outAudio, 'r')
 plot(1:winLen, IFFT_base{5}, 'g')
 
 title('inAudio & outAudio (window 5)')
@@ -118,8 +116,8 @@ ylabel('Value')
 
 figure(6)
 clf
-hold all
 plot(1:winTotalNum, targetFreq,'-m*', 'MarkerSize', 6, 'LineWidth', 2)
+hold all
 title('Snap Frequency of Each Window')
 xlabel('Window Number')
 ylabel('Frequency [Hz.]')
@@ -128,6 +126,38 @@ ylabel('Frequency [Hz.]')
 %% Playback %%
 
 audiowrite('PitchShift_Output.wav', outAudio, fs)
+
+
+%% Hamming Window Visualization %%
+
+%Not working as expected--must check variable names, etc.
+
+winVisVect = ones(size(inAudio));
+winVisSegments{1} = inAudio(StartIndex(1):EndIndex(1));
+winVisWindowedSegments{1} = winVisSegments{1}.*win;
+
+for i = 2:winTotalNum
+    winVisSegments{i} = winVisVect(StartIndex(i):EndIndex(i));
+    winVisWindowedSegments{i} = winVisSegments{i}.*win; 
+end
+
+outWinVis = zeros(size(inAudio));
+for i=1:winTotalNum
+   winVisStagingMatrix = zeros(size(inAudio));
+   winVisStagingMatrix(StartIndex(i):EndIndex(i)) = winVisWindowedSegments{1};
+   outWinVis = outWinVis + winVisStagingMatrix;
+end
+
+
+figure (7)
+clf
+hold all
+
+plot(timeScale, outWinVis, 'b')
+axis([4*(fs/winLen) 9*(fs/winLen)  -2 2])
+title('Windowing Visualization')
+xlabel('time (s.)')
+ylabel('Value')
 
 
 %% DEBUG %%
@@ -164,3 +194,32 @@ figure(3)
 hold all
 plot(1:winTotalNum, -outwinMaxFreq,'-b*', 'MarkerSize', 6, 'LineWidth', 2)
 legend('Input Signal', 'Output Signal', 'Location', 'SouthEast')
+
+%% ANIMATION %%
+
+% inAudio FFT %
+figure(8)
+title('FFT of inAudio')
+xlabel('Frequency [Hz.]')
+ylabel('|FFT|')
+for i = 1:winTotalNum
+    clf
+    semilogy(f, abs(FFT{i}), 'b', 'LineWidth', 1.5)
+    axis([-2000 2000 10^-8 .04]);
+    inAudioFFTMovie(i) = getframe;
+end
+
+% outAudio FFT %
+figure(9)
+title('FFT of outAudio')
+xlabel('Frequency [Hz.]')
+ylabel('|FFT|')
+for i = 1:winTotalNum
+    clf
+    semilogy(f, abs(outFFT{i}), 'r', 'LineWidth', 1.5)
+    axis([-2000 2000 10^-8 .04]);
+    outAudioFFTMovie(i) = getframe;
+end
+
+movie(inAudioFFTMovie, 1, fs/winLen)
+movie(outAudioFFTMovie, 1, fs/winLen)
