@@ -2,15 +2,15 @@
 
 %% Read Audio %%
 clear all
-[inAudio,fs] = audioread('CScale.wav');
+[inAudio,fs] = audioread('987.8_Hz.mp3');
 inAudio = inAudio(:,1); % stereo to mono
 numSamp = length(inAudio); % number of samples in inAudio
 timeScale = linspace(0,numSamp/fs, numSamp);
 
 %% Window Configuration %%
 
-winLen = 2^13; % make sure this is even
-winOverlap =  2*round(winLen*.45/2); % make sure this is even
+winLen = 2^14; % make sure this is even
+winOverlap =  2*round(winLen*.4982/2); % make sure this is even
 win =hamming(winLen, 'periodic'); % Hamming Window
 % win = ones([winLen 1]); % Homemade Rectangular Window
 
@@ -195,7 +195,7 @@ legend('Input Signal', 'Output Signal', 'Location', 'SouthEast')
 
 %% ANIMATION %%
 
-% inAudio FFT %
+inAudio FFT %
 figure(8)
 
 for i = 1:winTotalNum % Plot each input signal windowed segment's FFT and capture a frame [of each]
