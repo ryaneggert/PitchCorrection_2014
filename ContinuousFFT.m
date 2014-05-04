@@ -2,7 +2,7 @@
 
 %% Read Audio %%
 clear all
-[inAudio,fs] = audioread('CScale.wav');
+[inAudio,fs] = audioread('CScale2.wav');
 inAudio = inAudio(:,1); % stereo to mono
 numSamp = length(inAudio); % number of samples in inAudio
 timeScale = linspace(0,numSamp/fs, numSamp);
@@ -10,9 +10,10 @@ timeScale = linspace(0,numSamp/fs, numSamp);
 %% Window Configuration %%
 
 winLen = 2^13; % make sure this is even
-winOverlap =  2*round(winLen*.5/2); % make sure this is even
-win =hamming(winLen, 'periodic'); % Hamming Window
-% win = ones([winLen 1]); % Homemade Rectangular Window
+winOverlap =  2*round(winLen*.73/2); % make sure this is even
+win = flattopwin(winLen, 'periodic'); % Hamming Window
+win = ones([winLen 1]); % Homemade Rectangular Window
+winOverlap= 0;
 
 winTotalNum = floor((winOverlap - (numSamp + 1))/(winOverlap - winLen));
 % maximum number of windows w/o overrunning the end of inAudio.
@@ -198,10 +199,11 @@ legend('Input Signal', 'Output Signal', 'Location', 'SouthEast')
 % inAudio FFT %
 figure(8)
 
-for i = 1:winTotalNum % Plot each input signal windowed segment's FFT and capture a frame [of each]
+% for i = 1:winTotalNum % Plot each input signal windowed segment's FFT and capture a frame [of each]
+for i = 7
     clf
     semilogy(f, abs(FFT{i}), 'b', 'LineWidth', 1.5)
-    axis([-2000 2000 10^-8 .04]);
+    axis([-2000 2000 10^-12 .1]);
     title('FFT of inAudio')
     xlabel('Frequency [Hz.]')
     ylabel('|FFT|')
@@ -209,19 +211,19 @@ for i = 1:winTotalNum % Plot each input signal windowed segment's FFT and captur
 end
 
 % outAudio FFT %
-figure(9)
+% figure(9)
+% 
+% for i = 1:winTotalNum % Plot each output signal windowed segment's FFT and capture a frame [of each]
+%     clf
+%     semilogy(f, abs(outFFT{i}), 'r', 'LineWidth', 1.5)
+%     axis([-2000 2000 10^-12 .1]);
+%     title('FFT of outAudio')
+%     xlabel('Frequency [Hz.]')
+%     ylabel('|FFT|')
+%     outAudioFFTMovie(i) = getframe;
+% end
 
-for i = 1:winTotalNum % Plot each output signal windowed segment's FFT and capture a frame [of each]
-    clf
-    semilogy(f, abs(outFFT{i}), 'r', 'LineWidth', 1.5)
-    axis([-2000 2000 10^-8 .04]);
-    title('FFT of outAudio')
-    xlabel('Frequency [Hz.]')
-    ylabel('|FFT|')
-    outAudioFFTMovie(i) = getframe;
-end
-
-movie(inAudioFFTMovie, 1, fs/winLen) % Movie playback (inAudio)
-movie(outAudioFFTMovie, 1, fs/winLen) % Movie playback (outAudio)
-movie2avi(inAudioFFTMovie, 'inAudioFFTMovie.avi', 'compression', 'None'); % Export movie (inAudio)
-movie2avi(outAudioFFTMovie, 'outAudioFFTMovie.avi', 'compression', 'None'); % Export movie (outAudio)
+% movie(inAudioFFTMovie, 1, fs/winLen) % Movie playback (inAudio)
+% movie(outAudioFFTMovie, 1, fs/winLen) % Movie playback (outAudio)
+% movie2avi(inAudioFFTMovie, 'inAudioFFTMovie.avi', 'compression', 'None'); % Export movie (inAudio)
+% movie2avi(outAudioFFTMovie, 'outAudioFFTMovie.avi', 'compression', 'None'); % Export movie (outAudio)
