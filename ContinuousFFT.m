@@ -2,14 +2,14 @@
 
 %% Read Audio %%
 clear all
-[inAudio,fs] = audioread('800_hz.mp3');
+[inAudio,fs] = audioread('800_hz.wav');
 inAudio = inAudio(:,1); % stereo to mono
 numSamp = length(inAudio); % number of samples in inAudio
 timeScale = linspace(0,numSamp/fs, numSamp);
 
 %% Window Configuration %%
 
-winLen = 2^14; % make sure this is even
+winLen = 2^18; % make sure this is even
 winOverlap =  2*round(winLen*.5/2); % make sure this is even
 win =hamming(winLen, 'periodic'); % Hamming Window
 % win = ones([winLen 1]); % Homemade Rectangular Window
