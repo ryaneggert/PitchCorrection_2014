@@ -9,11 +9,11 @@ timeScale = linspace(0,numSamp/fs, numSamp);
 
 %% Window Configuration %%
 
-winLen = 2^13; % make sure this is even
-winOverlap =  2*round(winLen*.73/2); % make sure this is even
-win = flattopwin(winLen, 'periodic'); % Hamming Window
-win = ones([winLen 1]); % Homemade Rectangular Window
-winOverlap= 0;
+winLen = 2^14; % make sure this is even
+winOverlap =  2*round(winLen*.50/2); % make sure this is even
+win = hamming(winLen, 'periodic'); % Hamming Window
+% win = ones([winLen 1]); % Homemade Rectangular Window
+% winOverlap= 0;
 
 winTotalNum = floor((winOverlap - (numSamp + 1))/(winOverlap - winLen));
 % maximum number of windows w/o overrunning the end of inAudio.
@@ -70,29 +70,29 @@ end
 
 %% Plot Results %%
 
-figure (1) % Time-domain signal comparison plot
-clf
-hold all
-
-plot(timeScale, inAudio, 'b')
-plot(timeScale, outAudio, 'r')
-% axis([.5 .8 -.5 .5])
-title('inAudio & outAudio')
-xlabel('time (s.)')
-ylabel('Value')
-legend('inAudio', 'outAudio')
-
-figure (2) % Input FFT and theoretical output FFT
-clf
-semilogy(f, abs(FFT{3}), 'b', 'LineWidth', 1.5)
-hold all
-semilogy(f, abs(toIFFT{3}), 'r', 'LineWidth', 1.5)
-axis([-5000 5000 10^-6.3 .035]);
-title('FFT of inAudio and shifted FFT, "toIFFT"')
-xlabel('Frequency [Hz.]')
-ylabel('|FFT|')
-legend('FFT of inAudio', 'toIFFT')
-
+% figure (1) % Time-domain signal comparison plot
+% clf
+% hold all
+% 
+% plot(timeScale, inAudio, 'b')
+% plot(timeScale, outAudio, 'r')
+% % axis([.5 .8 -.5 .5])
+% title('inAudio & outAudio')
+% xlabel('time (s.)')
+% ylabel('Value')
+% legend('inAudio', 'outAudio')
+% 
+% figure (2) % Input FFT and theoretical output FFT
+% clf
+% semilogy(f, abs(FFT{103}), 'b', 'LineWidth', 1.5)
+% hold all
+% semilogy(f, abs(toIFFT{105}), 'r', 'LineWidth', 1.5)
+% axis([-5000 5000 10^-6.3 .035]);
+% title('FFT of inAudio and shifted FFT, "toIFFT"')
+% xlabel('Frequency [Hz.]')
+% ylabel('|FFT|')
+% legend('FFT of inAudio', 'toIFFT')
+% 
 figure (3) % "Maximum Frequency" identified from input signal FFT (& output signal FFT)
 clf
 hold all
@@ -101,64 +101,64 @@ plot(1:winTotalNum, -winMaxFreq,'-g*', 'MarkerSize', 6, 'LineWidth', 2)
 title('Maximum Frequency of Each Window')
 xlabel('Window Number')
 ylabel('Frequency [Hz.]')
+% 
+% 
+% figure (5) % Input Audio and Output Signal Window Comparison
+% clf
+% hold all
+% 
+% plot(1:winLen, WindowedSegments{5}, 'b')
+% plot(1:winLen, IFFT_base{5}, 'g')
+% 
+% title('inAudio & outAudio (window 5)')
+% xlabel('samples')
+% ylabel('Value')
+% 
+% figure(6) % Representation of each window's "snapping" frequency
+% clf
+% plot(1:winTotalNum, targetFreq,'-m*', 'MarkerSize', 6, 'LineWidth', 2)
+% hold all
+% title('Snap Frequency of Each Window')
+% xlabel('Window Number')
+% ylabel('Frequency [Hz.]')
 
-
-figure (5) % Input Audio and Output Signal Window Comparison
-clf
-hold all
-
-plot(1:winLen, WindowedSegments{5}, 'b')
-plot(1:winLen, IFFT_base{5}, 'g')
-
-title('inAudio & outAudio (window 5)')
-xlabel('samples')
-ylabel('Value')
-
-figure(6) % Representation of each window's "snapping" frequency
-clf
-plot(1:winTotalNum, targetFreq,'-m*', 'MarkerSize', 6, 'LineWidth', 2)
-hold all
-title('Snap Frequency of Each Window')
-xlabel('Window Number')
-ylabel('Frequency [Hz.]')
-
-
-%% Playback %%
-
+% 
+% %% Playback %%
+% 
 audiowrite('PitchShift_Output.wav', outAudio, fs) % Ouput a WAV audio file for listening
-
-
-%% Window Visualization %%
-
-winVisVect = ones(size(inAudio)); % Create a vector of ones as large as the input signal
-winVisSegments{1} = winVisVect(StartIndex(1):EndIndex(1)); % Split this into segments (first value)
-winVisWindowedSegments{1} = winVisSegments{1}.*win; % Apply the window to each segment (first value)
-
-for i = 2:winTotalNum
-    winVisSegments{i} = winVisVect(StartIndex(i):EndIndex(i)); % Split this into segments 
-    winVisWindowedSegments{i} = winVisSegments{i}.*win; % Apply the window to each segment
-end
-
-outWinVis = zeros(size(inAudio)); % Reconstruct windowed segments as done in "%% Reconstructing Audio %%"
-
-for i=1:winTotalNum
-    winVisStagingMatrix = zeros(size(inAudio));
-    winVisStagingMatrix(StartIndex(i):EndIndex(i)) = winVisWindowedSegments{1};
-    outWinVis = outWinVis + winVisStagingMatrix;
-end
-
-
-figure (7) % Visualization of Window Overlap
-clf
-hold all
-
-plot(timeScale, outWinVis, 'b')
-axis([4*(winLen/fs) 9*(winLen/fs)  -2 2])
-title('Windowing Visualization')
-xlabel('time (s.)')
-ylabel('Value')
-
-
+% 
+% 
+% %% Window Visualization %%
+% 
+% winVisVect = ones(size(inAudio)); % Create a vector of ones as large as the input signal
+% winVisSegments{1} = winVisVect(StartIndex(1):EndIndex(1)); % Split this into segments (first value)
+% winVisWindowedSegments{1} = winVisSegments{1}.*win; % Apply the window to each segment (first value)
+% 
+% for i = 2:winTotalNum
+%     winVisSegments{i} = winVisVect(StartIndex(i):EndIndex(i)); % Split this into segments 
+%     winVisWindowedSegments{i} = winVisSegments{i}.*win; % Apply the window to each segment
+% end
+% 
+% outWinVis = zeros(size(inAudio)); % Reconstruct windowed segments as done in "%% Reconstructing Audio %%"
+% 
+% for i=1:winTotalNum
+%     winVisStagingMatrix = zeros(size(inAudio));
+%     winVisStagingMatrix(StartIndex(i):EndIndex(i)) = winVisWindowedSegments{1};
+%     outWinVis = outWinVis + winVisStagingMatrix;
+% end
+% 
+% 
+% figure (7) % Visualization of Window Overlap
+% clf
+% hold all
+% 
+% plot(timeScale, outWinVis, 'b')
+% axis([4*(winLen/fs) 9*(winLen/fs)  -2 2])
+% title('Windowing Visualization')
+% xlabel('time (s.)')
+% ylabel('Value')
+% 
+% 
 %% DEBUG %%
 
 % Take FFT of Output %
@@ -193,26 +193,29 @@ figure(3) % "Maximum Frequency" identified from output signal FFT (& input signa
 hold all
 plot(1:winTotalNum, -outwinMaxFreq,'-b*', 'MarkerSize', 6, 'LineWidth', 2) % Note: take opposite of outwinMaxFreq
 legend('Input Signal', 'Output Signal', 'Location', 'SouthEast')
-
-%% ANIMATION %%
+% 
+% ANIMATION %%
 
 % inAudio FFT %
 figure(8)
 
-% for i = 1:winTotalNum % Plot each input signal windowed segment's FFT and capture a frame [of each]
-for i = 7
+for i = 1:winTotalNum % Plot each input signal windowed segment's FFT and capture a frame [of each]
+% for i = 7
     clf
+    semilogy(f, abs(outFFT{i}), 'r', 'LineWidth', 1.5)
+    hold all
     semilogy(f, abs(FFT{i}), 'b', 'LineWidth', 1.5)
-    axis([-2000 2000 10^-12 .1]);
+    axis([-2000 2000 10^-7 .1]);
     title('FFT of inAudio')
     xlabel('Frequency [Hz.]')
     ylabel('|FFT|')
+    legend('Output FFT', 'Input FFT')
     inAudioFFTMovie(i) = getframe;
 end
 
 % outAudio FFT %
-% figure(9)
-% 
+% figure(8)
+
 % for i = 1:winTotalNum % Plot each output signal windowed segment's FFT and capture a frame [of each]
 %     clf
 %     semilogy(f, abs(outFFT{i}), 'r', 'LineWidth', 1.5)
@@ -225,5 +228,5 @@ end
 
 % movie(inAudioFFTMovie, 1, fs/winLen) % Movie playback (inAudio)
 % movie(outAudioFFTMovie, 1, fs/winLen) % Movie playback (outAudio)
-% movie2avi(inAudioFFTMovie, 'inAudioFFTMovie.avi', 'compression', 'None'); % Export movie (inAudio)
+movie2avi(inAudioFFTMovie, 'inAudioFFTMovie.avi', 'compression', 'None', 'fps', fs/winLen); % Export movie (inAudio)
 % movie2avi(outAudioFFTMovie, 'outAudioFFTMovie.avi', 'compression', 'None'); % Export movie (outAudio)
