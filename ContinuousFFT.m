@@ -2,17 +2,29 @@
 
 %% Read Audio %%
 clear all
+<<<<<<< HEAD
 [inAudio,fs] = audioread('800_hz.wav');
+=======
+[inAudio,fs] = audioread('CScale2.wav');
+>>>>>>> f0dee94004b778703af8d4f7051dacf84373b7ce
 inAudio = inAudio(:,1); % stereo to mono
 numSamp = length(inAudio); % number of samples in inAudio
 timeScale = linspace(0,numSamp/fs, numSamp);
 
 %% Window Configuration %%
 
+<<<<<<< HEAD
 winLen = 2^18; % make sure this is even
 winOverlap =  2*round(winLen*.5/2); % make sure this is even
 win =hamming(winLen, 'periodic'); % Hamming Window
 % win = ones([winLen 1]); % Homemade Rectangular Window
+=======
+winLen = 2^13; % make sure this is even
+winOverlap =  2*round(winLen*.73/2); % make sure this is even
+win = flattopwin(winLen, 'periodic'); % Hamming Window
+win = ones([winLen 1]); % Homemade Rectangular Window
+winOverlap= 0;
+>>>>>>> f0dee94004b778703af8d4f7051dacf84373b7ce
 
 winTotalNum = floor((winOverlap - (numSamp + 1))/(winOverlap - winLen));
 % maximum number of windows w/o overrunning the end of inAudio.
@@ -127,7 +139,7 @@ ylabel('Frequency [Hz.]')
 audiowrite('PitchShift_Output.wav', outAudio, fs) % Ouput a WAV audio file for listening
 
 
-%% Hamming Window Visualization %%
+%% Window Visualization %%
 
 winVisVect = ones(size(inAudio)); % Create a vector of ones as large as the input signal
 winVisSegments{1} = winVisVect(StartIndex(1):EndIndex(1)); % Split this into segments (first value)
@@ -194,6 +206,7 @@ plot(1:winTotalNum, -outwinMaxFreq,'-b*', 'MarkerSize', 6, 'LineWidth', 2) % Not
 legend('Input Signal', 'Output Signal', 'Location', 'SouthEast')
 
 %% ANIMATION %%
+<<<<<<< HEAD
 % 
 % inAudio FFT %
 % figure(8)
@@ -209,18 +222,44 @@ legend('Input Signal', 'Output Signal', 'Location', 'SouthEast')
 % end
 % 
 % % outAudio FFT %
+=======
+
+% inAudio FFT %
+figure(8)
+
+% for i = 1:winTotalNum % Plot each input signal windowed segment's FFT and capture a frame [of each]
+for i = 7
+    clf
+    semilogy(f, abs(FFT{i}), 'b', 'LineWidth', 1.5)
+    axis([-2000 2000 10^-12 .1]);
+    title('FFT of inAudio')
+    xlabel('Frequency [Hz.]')
+    ylabel('|FFT|')
+    inAudioFFTMovie(i) = getframe;
+end
+
+% outAudio FFT %
+>>>>>>> f0dee94004b778703af8d4f7051dacf84373b7ce
 % figure(9)
 % 
 % for i = 1:winTotalNum % Plot each output signal windowed segment's FFT and capture a frame [of each]
 %     clf
 %     semilogy(f, abs(outFFT{i}), 'r', 'LineWidth', 1.5)
+<<<<<<< HEAD
 %     axis([-2000 2000 10^-8 .04]);
+=======
+%     axis([-2000 2000 10^-12 .1]);
+>>>>>>> f0dee94004b778703af8d4f7051dacf84373b7ce
 %     title('FFT of outAudio')
 %     xlabel('Frequency [Hz.]')
 %     ylabel('|FFT|')
 %     outAudioFFTMovie(i) = getframe;
 % end
+<<<<<<< HEAD
 % 
+=======
+
+>>>>>>> f0dee94004b778703af8d4f7051dacf84373b7ce
 % movie(inAudioFFTMovie, 1, fs/winLen) % Movie playback (inAudio)
 % movie(outAudioFFTMovie, 1, fs/winLen) % Movie playback (outAudio)
 % movie2avi(inAudioFFTMovie, 'inAudioFFTMovie.avi', 'compression', 'None'); % Export movie (inAudio)
