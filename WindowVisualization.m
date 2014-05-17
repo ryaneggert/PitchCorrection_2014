@@ -6,12 +6,13 @@ inAudio = zeros([1 numSamp]);
 
 
 winLens = round(pow2(linspace(4,14.7,5000)));
-pct = linspace(.30, .90, 1000);
-for k = 1:5000
+pct = linspace(0, .85, 200);
+pct = .75
+for k = 1:1
     winLen = 2^13; % make sure this is even
     percentOverlap = pct(k)
     winOverlap =  2*round(winLen*percentOverlap/2); % make sure this is even
-    win =parzenwin(winLen)'; % Hamming Window
+    win =blackmanharris(winLen, 'periodic')'; % Hamming Window
     % win = ones([winLen 1]); % Homemade Rectangular Window
     
     winTotalNum = floor((winOverlap - (numSamp + 1))/(winOverlap - winLen));
@@ -44,16 +45,18 @@ for k = 1:5000
     end
     
     
-    figure (1) % Visualization of Window Overlap
+    THEFIG = figure (1); % Visualization of Window Overlap
     clf
     hold all
     
     plot(1:numSamp, outWinVis, 'b')
-    axis([1*(winLen) 6*(winLen)  0 3])
-    title('Windowing Visualization')
-    xlabel('time (s.)')
+    PctReadout = strcat('Percent Overlap: ', num2str(percentOverlap*100), '%');
+    text(20000,2, PctReadout)
+    axis([0 6*(winLen)  0 4])
+    title('Hamming Summation')
+    xlabel('Samples')
     ylabel('Value')
-%     OverlapMovie(i) = getframe;
-    RangeData(k) = range(outWinVis(2*winLen:(numSamp-(2*winLen))));
+%     OverlapMovie(k) = getframe(THEFIG);
+%     RangeData(k) = range(outWinVis(2*winLen:(numSamp-(2*winLen))));
 end
 
